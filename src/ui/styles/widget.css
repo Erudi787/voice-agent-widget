@@ -1,0 +1,360 @@
+/* ── Reset inside Shadow DOM ── */
+:host {
+  all: initial;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 14px;
+  color: #fff;
+  line-height: 1.4;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ── Container ── */
+.vaw-container {
+  position: fixed;
+  z-index: 2147483647;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 12px;
+  pointer-events: none;
+}
+
+.vaw-container--bottom-right {
+  bottom: 24px;
+  right: 24px;
+}
+
+.vaw-container--bottom-left {
+  bottom: 24px;
+  left: 24px;
+  align-items: flex-start;
+}
+
+/* ── FAB Button ── */
+.vaw-fab {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: auto;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.vaw-fab:hover {
+  transform: scale(1.08);
+  box-shadow: 0 6px 28px rgba(0, 0, 0, 0.4);
+}
+
+.vaw-fab:active {
+  transform: scale(0.95);
+}
+
+.vaw-fab svg {
+  width: 26px;
+  height: 26px;
+  fill: #fff;
+  transition: opacity 0.15s ease;
+}
+
+.vaw-fab--active {
+  animation: vaw-pulse 2s infinite;
+}
+
+@keyframes vaw-pulse {
+  0%, 100% { box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3); }
+  50% { box-shadow: 0 4px 20px rgba(99, 102, 241, 0.5), 0 0 0 8px rgba(99, 102, 241, 0.15); }
+}
+
+/* ── Panel ── */
+.vaw-panel {
+  width: 360px;
+  max-height: 500px;
+  border-radius: 16px;
+  overflow: hidden;
+  pointer-events: auto;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.35);
+  transform-origin: bottom right;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.vaw-container--bottom-left .vaw-panel {
+  transform-origin: bottom left;
+}
+
+.vaw-panel--hidden {
+  opacity: 0;
+  transform: scale(0.92) translateY(8px);
+  pointer-events: none;
+}
+
+/* ── Dark theme ── */
+.vaw-panel--dark {
+  background: #1a1a2e;
+  color: #e2e8f0;
+}
+
+/* ── Light theme ── */
+.vaw-panel--light {
+  background: #ffffff;
+  color: #1e293b;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.15);
+}
+
+/* ── Panel Header ── */
+.vaw-header {
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.vaw-panel--light .vaw-header {
+  border-bottom-color: rgba(0, 0, 0, 0.08);
+}
+
+.vaw-header__title {
+  font-size: 15px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.vaw-header__close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 6px;
+  color: inherit;
+  opacity: 0.6;
+  transition: opacity 0.15s;
+  display: flex;
+  align-items: center;
+}
+
+.vaw-header__close:hover {
+  opacity: 1;
+}
+
+.vaw-header__close svg {
+  width: 18px;
+  height: 18px;
+  fill: currentColor;
+}
+
+/* ── Status Indicator ── */
+.vaw-status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.vaw-status-dot--idle { background: #64748b; }
+.vaw-status-dot--connecting { background: #f59e0b; animation: vaw-blink 1s infinite; }
+.vaw-status-dot--active { background: #22c55e; }
+.vaw-status-dot--error { background: #ef4444; }
+
+@keyframes vaw-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+/* ── Transcript Area ── */
+.vaw-transcript {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 200px;
+  max-height: 340px;
+}
+
+.vaw-transcript::-webkit-scrollbar {
+  width: 4px;
+}
+
+.vaw-transcript::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
+}
+
+.vaw-panel--light .vaw-transcript::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.15);
+}
+
+/* ── Message Bubbles ── */
+.vaw-message {
+  max-width: 85%;
+  padding: 10px 14px;
+  border-radius: 14px;
+  font-size: 13px;
+  line-height: 1.5;
+  word-break: break-word;
+}
+
+.vaw-message--user {
+  align-self: flex-end;
+  border-bottom-right-radius: 4px;
+}
+
+.vaw-message--assistant {
+  align-self: flex-start;
+  background: rgba(255, 255, 255, 0.08);
+  border-bottom-left-radius: 4px;
+}
+
+.vaw-panel--light .vaw-message--assistant {
+  background: #f1f5f9;
+}
+
+/* ── Visualizer ── */
+.vaw-visualizer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  height: 32px;
+  padding: 0 20px;
+}
+
+.vaw-visualizer__bar {
+  width: 3px;
+  border-radius: 2px;
+  transition: height 0.1s ease;
+}
+
+/* ── Footer / Controls ── */
+.vaw-controls {
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.vaw-panel--light .vaw-controls {
+  border-top-color: rgba(0, 0, 0, 0.08);
+}
+
+.vaw-btn {
+  padding: 10px 24px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+  transition: opacity 0.15s;
+  pointer-events: auto;
+}
+
+.vaw-btn:hover {
+  opacity: 0.9;
+}
+
+.vaw-btn--start {
+  width: 100%;
+}
+
+.vaw-btn--stop {
+  background: #ef4444;
+  width: 100%;
+}
+
+/* ── Placeholder / Empty State ── */
+.vaw-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 40px 20px;
+  text-align: center;
+  opacity: 0.5;
+  font-size: 13px;
+}
+
+.vaw-empty svg {
+  width: 36px;
+  height: 36px;
+  fill: currentColor;
+  opacity: 0.4;
+}
+
+/* ── Error State ── */
+.vaw-error {
+  padding: 16px 20px;
+  text-align: center;
+  font-size: 13px;
+}
+
+.vaw-error__message {
+  color: #ef4444;
+  margin-bottom: 12px;
+}
+
+.vaw-error__retry {
+  background: none;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: inherit;
+  padding: 6px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.vaw-panel--light .vaw-error__retry {
+  border-color: rgba(0, 0, 0, 0.2);
+}
+
+/* ── Connecting Spinner ── */
+.vaw-connecting {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 40px 20px;
+  font-size: 13px;
+  opacity: 0.7;
+}
+
+.vaw-spinner {
+  width: 28px;
+  height: 28px;
+  border: 3px solid rgba(255, 255, 255, 0.15);
+  border-top-color: currentColor;
+  border-radius: 50%;
+  animation: vaw-spin 0.8s linear infinite;
+}
+
+.vaw-panel--light .vaw-spinner {
+  border-color: rgba(0, 0, 0, 0.1);
+  border-top-color: currentColor;
+}
+
+@keyframes vaw-spin {
+  to { transform: rotate(360deg); }
+}

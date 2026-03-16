@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Voice Agent Widget — Demo</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #0f172a;
+      color: #e2e8f0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .demo {
+      text-align: center;
+      max-width: 500px;
+      padding: 40px;
+    }
+    h1 { font-size: 28px; margin-bottom: 12px; }
+    p { opacity: 0.6; line-height: 1.6; margin-bottom: 24px; }
+    code {
+      display: block;
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      padding: 16px;
+      text-align: left;
+      font-size: 13px;
+      line-height: 1.6;
+      overflow-x: auto;
+      white-space: pre;
+    }
+  </style>
+</head>
+<body>
+  <div class="demo">
+    <h1>Voice Agent Widget</h1>
+    <p>
+      Click the floating button in the bottom-right corner to start a voice conversation.
+      Replace the credentials below with your own Vapi public key and assistant ID.
+    </p>
+    <code>&lt;voice-agent-widget
+  public-key="YOUR_PUBLIC_KEY"
+  assistant-id="YOUR_ASSISTANT_ID"
+&gt;&lt;/voice-agent-widget&gt;</code>
+  </div>
+
+  <!-- Method 1: Custom Element -->
+  <voice-agent-widget
+    public-key="YOUR_PUBLIC_KEY"
+    assistant-id="YOUR_ASSISTANT_ID"
+  ></voice-agent-widget>
+
+  <!-- Load the widget (Vite dev server serves from src) -->
+  <script type="module" src="/src/loader/index.ts"></script>
+</body>
+</html>
