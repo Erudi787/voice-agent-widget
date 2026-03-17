@@ -47,6 +47,7 @@ export class SessionStateMachine {
   private _error: string | null = null;
   private _listeners = new Set<StateChangeCallback>();
   private _connectTimer: ReturnType<typeof setTimeout> | null = null;
+  private _endingTimer: ReturnType<typeof setTimeout> | null = null;
 
   get snapshot(): SessionSnapshot {
     return {
@@ -88,7 +89,6 @@ export class SessionStateMachine {
       return;
     }
 
-    const prevState = this._state;
     this._state = nextState;
 
     // Reset sub-state when entering active
@@ -113,14 +113,10 @@ export class SessionStateMachine {
     }
 
     // Auto-transition: ending → idle after cleanup delay
-    if (nextState === 'ending' && prevState === 'active') {
-      setTimeout(() => {
-        if (this._state === 'ending') {
-          this._state = 'idle';
-          this._error = null;
-          this.notify();
-        }
-      }, 500);
+    if (nextState === 'ending') {
+      this.startEndingTimeout();
+    } else {
+      this.clearEndingTimeout();
     }
 
     this.notify();
@@ -128,6 +124,7 @@ export class SessionStateMachine {
 
   reset(): void {
     this.clearConnectTimeout();
+    this.clearEndingTimeout();
     this._state = 'idle';
     this._subState = 'processing';
     this._error = null;
@@ -158,6 +155,24 @@ export class SessionStateMachine {
     if (this._connectTimer) {
       clearTimeout(this._connectTimer);
       this._connectTimer = null;
+    }
+  }
+
+  private startEndingTimeout(): void {
+    this.clearEndingTimeout();
+    this._endingTimer = setTimeout(() => {
+      if (this._state === 'ending') {
+        this._state = 'idle';
+        this._error = null;
+        this.notify();
+      }
+    }, 500);
+  }
+
+  private clearEndingTimeout(): void {
+    if (this._endingTimer) {
+      clearTimeout(this._endingTimer);
+      this._endingTimer = null;
     }
   }
 }

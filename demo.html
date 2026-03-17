@@ -1,11 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Voice Agent Widget — Demo</title>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       background: #0f172a;
@@ -15,13 +21,24 @@
       align-items: center;
       justify-content: center;
     }
+
     .demo {
       text-align: center;
       max-width: 500px;
       padding: 40px;
     }
-    h1 { font-size: 28px; margin-bottom: 12px; }
-    p { opacity: 0.6; line-height: 1.6; margin-bottom: 24px; }
+
+    h1 {
+      font-size: 28px;
+      margin-bottom: 12px;
+    }
+
+    p {
+      opacity: 0.6;
+      line-height: 1.6;
+      margin-bottom: 24px;
+    }
+
     code {
       display: block;
       background: #1e293b;
@@ -36,6 +53,7 @@
     }
   </style>
 </head>
+
 <body>
   <div class="demo">
     <h1>Voice Agent Widget</h1>
@@ -50,12 +68,17 @@
   </div>
 
   <!-- Method 1: Custom Element -->
-  <voice-agent-widget
-    public-key="YOUR_PUBLIC_KEY"
-    assistant-id="YOUR_ASSISTANT_ID"
-  ></voice-agent-widget>
+  <voice-agent-widget id="widget"></voice-agent-widget>
 
   <!-- Load the widget (Vite dev server serves from src) -->
-  <script type="module" src="/src/loader/index.ts"></script>
+  <script type="module">
+    import '/src/loader/index.ts';
+
+    // Vite exposes VITE_-prefixed env vars via import.meta.env
+    const widget = document.getElementById('widget');
+    widget.setAttribute('public-key', import.meta.env.VITE_PUBLIC_KEY);
+    widget.setAttribute('assistant-id', import.meta.env.VITE_ASSISTANT_ID);
+  </script>
 </body>
+
 </html>

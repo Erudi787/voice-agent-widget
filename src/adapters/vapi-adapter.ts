@@ -17,24 +17,33 @@ export class VapiAdapter {
   async start(assistantId: string): Promise<void> {
     if (this.active) return;
 
-    // Request microphone first (triggers browser permission prompt)
     this.onEvent({ type: 'START_REQUESTED' });
 
+    // Check mic permission state without triggering a prompt, so we can
+    // update the UI before Vapi's own getUserMedia fires the browser dialog.
     try {
-      await navigator.mediaDevices.getUserMedia({ audio: true });
-      this.onEvent({ type: 'MIC_GRANTED' });
-    } catch (err) {
-      const message = err instanceof Error ? err.message : 'Microphone access denied';
-      this.onEvent({ type: 'MIC_DENIED', error: message });
-      return;
+      const permStatus = await navigator.permissions.query({ name: 'microphone' as PermissionName });
+      if (permStatus.state === 'denied') {
+        this.onEvent({ type: 'MIC_DENIED', error: 'Microphone access was previously denied. Please allow it in browser settings.' });
+        return;
+      }
+    } catch {
+      // permissions.query not supported in all browsers — proceed anyway
     }
+
+    this.onEvent({ type: 'MIC_GRANTED' });
 
     try {
       await this.vapi.start(assistantId);
       this.active = true;
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to start call';
-      this.onEvent({ type: 'ERROR', message });
+      // Distinguish mic denial from other errors
+      if (message.toLowerCase().includes('permission') || message.toLowerCase().includes('notallowed')) {
+        this.onEvent({ type: 'MIC_DENIED', error: message });
+      } else {
+        this.onEvent({ type: 'ERROR', message });
+      }
     }
   }
 
