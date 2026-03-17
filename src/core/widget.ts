@@ -24,6 +24,7 @@ export class VoiceAgentWidget implements VoiceAgentWidgetAPI {
       onStart: () => this.start(),
       onStop: () => this.stop(),
       onTogglePanel: () => this.renderer.togglePanel(),
+      onSendMessage: (text) => this.sendMessage(text),
     });
 
     // State changes → UI updates
@@ -46,6 +47,21 @@ export class VoiceAgentWidget implements VoiceAgentWidgetAPI {
     const { state } = this.stateMachine.snapshot;
     if (state !== 'active' && state !== 'connecting') return;
     this.adapter.stop();
+  }
+
+  sendMessage(text: string): void {
+    const { state } = this.stateMachine.snapshot;
+    if (state !== 'active') return;
+
+    // Send to Vapi
+    this.adapter.sendMessage(text);
+
+    // Show as user transcript in the UI
+    this.renderer.addTranscript(
+      { role: 'user', text, timestamp: Date.now() },
+      true,
+    );
+    this.eventBus.emit('transcript', { role: 'user', text, final: true });
   }
 
   destroy(): void {

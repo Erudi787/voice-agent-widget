@@ -30,6 +30,10 @@ Here's what you can do with Voice Agent Widget:
 
 - **Three Embedding Methods**: Embed via custom element, script tag with data attributes, or programmatic JavaScript API.
 
+- **Chat Mode**: Type text messages alongside voice during an active conversation. Supports three modes: `voice` (mic only), `chat` (text only), or `both` (voice + text input).
+
+- **Keyboard Shortcuts**: Escape to close the panel, Ctrl+Shift+V to toggle the panel. Focus-visible outlines for full keyboard navigation.
+
 ### 🎯 Widget States:
 
 The widget communicates its state clearly:
@@ -55,6 +59,10 @@ For the UI, I chose vanilla TypeScript with DOM APIs instead of React or Vue. Th
 
 After the core was working, I ran a production readiness audit. This caught several issues: a double microphone permission prompt (fixed by using the Permissions API instead of a redundant `getUserMedia` call), a race condition in the ending state cleanup timer, and missing browser capability detection. All were fixed before release.
 
+Next, I added a chat mode so users can type text messages during an active voice call. This required extending the Vapi adapter with a `sendMessage` method, adding a text input component to the panel, and introducing a `mode` config option (`voice`, `chat`, or `both`). Keyboard shortcuts were added for accessibility — Escape to close the panel, Ctrl+Shift+V to toggle it — along with focus-visible outlines for keyboard navigation.
+
+Finally, I added a comprehensive test suite using Vitest with jsdom. The tests cover the state machine (transitions, timeouts, sub-states, error recovery), event bus (pub/sub, error isolation), config parsing (attribute variants, defaults, validation), and widget lifecycle integration (Shadow DOM rendering, chat mode toggling, event subscription, cleanup).
+
 ## 📚 What I Learned
 
 ### 🧠 Finite State Machines:
@@ -78,21 +86,24 @@ After the core was working, I ran a production readiness audit. This caught seve
 
 - **IIFE Output**: Configuring Vite's library mode to output an IIFE bundle that works via `<script>` tag was a key learning — it required `inlineDynamicImports` and careful entry point configuration.
 
+### 🧪 Testing Embeddable Widgets:
+
+- **Mocking External SDKs**: Testing a widget that wraps a third-party SDK (Vapi) required mocking the SDK as a class constructor, not just a function — a subtle but important distinction in Vitest.
+- **Shadow DOM in Tests**: jsdom supports `attachShadow`, so integration tests can verify the full rendering pipeline including style isolation.
+
 ### 📈 Overall Growth:
 
 This project deepened my understanding of real-time systems, embeddable SDK design, and the importance of architecture-first development. Designing the system before coding saved significant time by catching issues on paper instead of in code.
 
 ## 💭 How can it be improved?
 
-- Add unit and integration tests with Vitest and Playwright.
 - Add a light theme and auto-detect system preference.
 - Add configurable connection timeout duration.
 - Add retry with exponential backoff for failed connections.
 - Add offline detection and graceful degradation.
 - Add analytics event hooks for tracking conversation metrics.
-- Add keyboard shortcuts for accessibility (e.g., Escape to close panel).
 - Add multi-language support for status text and labels.
-- Add a chat mode alongside voice for text-based interaction.
+- Add end-to-end tests with Playwright for browser-level verification.
 
 ## 🚦 Running the Project
 
@@ -107,6 +118,12 @@ To run the project in your local environment, follow these steps:
    ```
 4. Run `npm run dev` to start the development server.
 5. Open [http://localhost:5173](http://localhost:5173) (or the address shown in your console) in your web browser to view the demo.
+6. Run `npm test` to execute the test suite.
+
+### 🎯 Keyboard Shortcuts:
+
+- **Escape**: Close the panel.
+- **Ctrl+Shift+V** (or Cmd+Shift+V on Mac): Toggle the panel open/closed.
 
 ## 🏗️ Embedding
 
@@ -116,6 +133,7 @@ To run the project in your local environment, follow these steps:
 <voice-agent-widget
   public-key="YOUR_PUBLIC_KEY"
   assistant-id="YOUR_ASSISTANT_ID"
+  mode="both"
 ></voice-agent-widget>
 ```
 
@@ -135,6 +153,7 @@ const widget = VoiceAgentWidgetSDK.create({
   assistantId: 'YOUR_ASSISTANT_ID',
   position: 'bottom-right',
   theme: 'dark',
+  mode: 'both', // 'voice', 'chat', or 'both'
 });
 
 widget.on('call-start', () => console.log('Conversation started'));

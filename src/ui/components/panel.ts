@@ -1,6 +1,7 @@
 import { ICON_CLOSE } from '../icons.js';
 import { createTranscriptContainer } from './transcript.js';
 import { createVisualizer } from './audio-visualizer.js';
+import { createChatInput, type ChatInputElements } from './chat-input.js';
 import type { WidgetConfig } from '../../types/index.js';
 
 export interface PanelElements {
@@ -12,9 +13,10 @@ export interface PanelElements {
   controls: HTMLDivElement;
   actionBtn: HTMLButtonElement;
   closeBtn: HTMLButtonElement;
+  chatInput: ChatInputElements | null;
 }
 
-export function createPanel(config: WidgetConfig): PanelElements {
+export function createPanel(config: WidgetConfig, onSendMessage?: (text: string) => void): PanelElements {
   const panel = document.createElement('div');
   panel.className = `vaw-panel vaw-panel--${config.theme} vaw-panel--hidden`;
 
@@ -59,11 +61,20 @@ export function createPanel(config: WidgetConfig): PanelElements {
 
   controls.appendChild(actionBtn);
 
+  // ── Chat Input (for 'chat' or 'both' modes) ──
+  const showChat = config.mode === 'chat' || config.mode === 'both';
+  const chatInput = showChat && onSendMessage
+    ? createChatInput(config.accentColor, onSendMessage)
+    : null;
+
   // ── Assemble ──
   panel.appendChild(header);
   panel.appendChild(transcript);
   panel.appendChild(visualizer);
+  if (chatInput) {
+    panel.appendChild(chatInput.container);
+  }
   panel.appendChild(controls);
 
-  return { panel, statusDot, statusText, transcript, visualizer, controls, actionBtn, closeBtn };
+  return { panel, statusDot, statusText, transcript, visualizer, controls, actionBtn, closeBtn, chatInput };
 }

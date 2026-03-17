@@ -79,6 +79,7 @@ function createWidget(options: {
   position?: WidgetConfig['position'];
   theme?: WidgetConfig['theme'];
   accentColor?: string;
+  mode?: WidgetConfig['mode'];
   mountTarget?: HTMLElement;
 }): VoiceAgentWidgetAPI {
   const err = checkBrowserSupport();
@@ -90,6 +91,7 @@ function createWidget(options: {
     position: options.position ?? DEFAULT_CONFIG.position,
     theme: options.theme ?? DEFAULT_CONFIG.theme,
     accentColor: options.accentColor ?? DEFAULT_CONFIG.accentColor,
+    mode: options.mode ?? DEFAULT_CONFIG.mode,
   };
 
   return new VoiceAgentWidget(options.mountTarget ?? document.body, config);

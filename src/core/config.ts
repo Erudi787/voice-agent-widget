@@ -22,6 +22,7 @@ export function parseConfig(el: Element): WidgetConfig {
     position: (attr(el, 'position') ?? attr(el, 'data-position') ?? DEFAULT_CONFIG.position) as WidgetConfig['position'],
     theme: (attr(el, 'theme') ?? attr(el, 'data-theme') ?? DEFAULT_CONFIG.theme) as WidgetConfig['theme'],
     accentColor: attr(el, 'accent-color') ?? attr(el, 'data-accent-color') ?? DEFAULT_CONFIG.accentColor,
+    mode: (attr(el, 'mode') ?? attr(el, 'data-mode') ?? DEFAULT_CONFIG.mode) as WidgetConfig['mode'],
   };
 }
 

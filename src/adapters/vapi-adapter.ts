@@ -54,6 +54,17 @@ export class VapiAdapter {
     this.active = false;
   }
 
+  sendMessage(text: string): void {
+    if (!this.active) return;
+    this.vapi.send({
+      type: 'add-message',
+      message: {
+        role: 'user',
+        content: text,
+      },
+    });
+  }
+
   destroy(): void {
     this.stop();
     this.vapi.removeAllListeners();

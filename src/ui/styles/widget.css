@@ -329,6 +329,97 @@
   border-color: rgba(0, 0, 0, 0.2);
 }
 
+/* ── Chat Input ── */
+.vaw-chat-input {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.vaw-panel--light .vaw-chat-input {
+  border-top-color: rgba(0, 0, 0, 0.08);
+}
+
+.vaw-chat-input__field {
+  flex: 1;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.06);
+  color: inherit;
+  font-size: 13px;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.vaw-chat-input__field:focus {
+  border-color: rgba(255, 255, 255, 0.35);
+}
+
+.vaw-chat-input__field:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.vaw-chat-input__field::placeholder {
+  color: inherit;
+  opacity: 0.4;
+}
+
+.vaw-panel--light .vaw-chat-input__field {
+  border-color: rgba(0, 0, 0, 0.15);
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.vaw-panel--light .vaw-chat-input__field:focus {
+  border-color: rgba(0, 0, 0, 0.35);
+}
+
+.vaw-chat-input__send {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: opacity 0.15s;
+}
+
+.vaw-chat-input__send:hover {
+  opacity: 0.85;
+}
+
+.vaw-chat-input__send:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.vaw-chat-input__send svg {
+  width: 16px;
+  height: 16px;
+  fill: #fff;
+}
+
+/* ── Focus Visible (keyboard navigation) ── */
+.vaw-fab:focus-visible,
+.vaw-btn:focus-visible,
+.vaw-header__close:focus-visible,
+.vaw-chat-input__send:focus-visible {
+  outline: 2px solid rgba(99, 102, 241, 0.7);
+  outline-offset: 2px;
+}
+
+.vaw-chat-input__field:focus-visible {
+  border-color: rgba(99, 102, 241, 0.7);
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+}
+
 /* ── Connecting Spinner ── */
 .vaw-connecting {
   display: flex;

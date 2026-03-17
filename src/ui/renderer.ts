@@ -11,6 +11,7 @@ export interface RendererCallbacks {
   onStart: () => void;
   onStop: () => void;
   onTogglePanel: () => void;
+  onSendMessage?: (text: string) => void;
 }
 
 export class WidgetRenderer {
@@ -22,6 +23,7 @@ export class WidgetRenderer {
   private callbacks: RendererCallbacks;
   private panelOpen = false;
   private pendingPartials = new Map<string, HTMLDivElement>(); // role → last partial bubble
+  private readonly keydownHandler: (e: KeyboardEvent) => void;
 
   constructor(mountTarget: HTMLElement, config: WidgetConfig, callbacks: RendererCallbacks) {
     this.config = config;
@@ -45,7 +47,7 @@ export class WidgetRenderer {
     container.className = `vaw-container vaw-container--${config.position}`;
 
     // Create panel
-    this.panelEls = createPanel(config);
+    this.panelEls = createPanel(config, (text) => this.callbacks.onSendMessage?.(text));
     container.appendChild(this.panelEls.panel);
 
     // Create FAB
@@ -58,6 +60,10 @@ export class WidgetRenderer {
     this.fab.addEventListener('click', () => this.callbacks.onTogglePanel());
     this.panelEls.closeBtn.addEventListener('click', () => this.togglePanel(false));
     this.panelEls.actionBtn.addEventListener('click', () => this.handleActionClick());
+
+    // Keyboard shortcuts (global)
+    this.keydownHandler = (e: KeyboardEvent) => this.handleKeydown(e);
+    document.addEventListener('keydown', this.keydownHandler);
   }
 
   update(snapshot: SessionSnapshot): void {
@@ -92,6 +98,20 @@ export class WidgetRenderer {
     // Auto-open panel when connecting
     if (state === 'connecting' || state === 'requesting-mic') {
       this.togglePanel(true);
+    }
+
+    // Chat input: enable only during active call
+    if (this.panelEls.chatInput) {
+      const chatEnabled = state === 'active';
+      this.panelEls.chatInput.input.disabled = !chatEnabled;
+      this.panelEls.chatInput.sendBtn.disabled = !chatEnabled || !this.panelEls.chatInput.input.value.trim();
+      this.panelEls.chatInput.input.placeholder = chatEnabled ? 'Type a message…' : 'Start a conversation first…';
+    }
+
+    // In chat-only mode, hide the voice action button and visualizer
+    if (this.config.mode === 'chat') {
+      this.panelEls.actionBtn.style.display = 'none';
+      this.panelEls.visualizer.style.display = 'none';
     }
   }
 
@@ -132,6 +152,7 @@ export class WidgetRenderer {
   }
 
   destroy(): void {
+    document.removeEventListener('keydown', this.keydownHandler);
     this.host.remove();
   }
 
@@ -191,6 +212,29 @@ export class WidgetRenderer {
       // Clear previous transcript for new session
       clearTranscript(this.panelEls.transcript);
       this.callbacks.onStart();
+    }
+  }
+
+  private handleKeydown(e: KeyboardEvent): void {
+    // Don't capture when user is typing in an input/textarea outside the widget
+    const target = e.target as HTMLElement;
+    const isTyping = target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable;
+
+    // Escape — close panel
+    if (e.key === 'Escape' && this.panelOpen) {
+      e.preventDefault();
+      this.togglePanel(false);
+      this.fab.focus();
+      return;
+    }
+
+    // Don't intercept shortcuts when user is typing in a form field
+    if (isTyping) return;
+
+    // Ctrl/Cmd + Shift + V — toggle panel
+    if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'V') {
+      e.preventDefault();
+      this.callbacks.onTogglePanel();
     }
   }
 }
