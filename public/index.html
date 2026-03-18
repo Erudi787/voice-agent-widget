@@ -71,11 +71,17 @@
 &gt;&lt;/voice-agent-widget&gt;</code>
   </div>
 
-  <voice-agent-widget
-    public-key="YOUR_PUBLIC_KEY"
-    assistant-id="YOUR_ASSISTANT_ID"
-    mode="both"
-  ></voice-agent-widget>
+  <voice-agent-widget id="widget"></voice-agent-widget>
+
+  <!-- Load the widget (Vite dev server serves from src) -->
+  <script type="module">
+    import '/src/loader/index.ts';
+
+    // Vite exposes VITE_-prefixed env vars via import.meta.env
+    const widget = document.getElementById('widget');
+    widget.setAttribute('public-key', import.meta.env.VITE_PUBLIC_KEY);
+    widget.setAttribute('assistant-id', import.meta.env.VITE_ASSISTANT_ID);
+  </script>
 
   <script src="./voice-widget.js"></script>
 </body>
